@@ -16,5 +16,15 @@
   }
 }
 "scripts": {
-  "deploy": "gh-pages -d dist"
+  "name": "...",
+  "version": "...",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"  // <-- AÑADE ESTA LÍNEA
+  },
+  "dependencies": {
+    ...
+  }
 }
