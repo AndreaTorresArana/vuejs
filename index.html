@@ -6,7 +6,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
   </head>
-  <body>
+  <body><script setup>
+import { ref, computed } from 'vue'
+
+// --- ESTADO REACTIVO ---
+// 'ref' se usa para crear variables que, al cambiar, actualizan la vista automáticamente.
+
+// ID para asegurar que cada tarea nueva tenga una clave única
+let id = 0
+
+// Almacena el texto de la nueva tarea que el usuario está escribiendo
+const nuevaTareaTexto = ref('')
+
+// Lista de tareas inicial. Cada tarea es un objeto.
+const tareas = ref([
+  { id: id++, texto: 'Aprender lo básico de Vue', completada: false },
+  { id: id++, texto: 'Crear mi primera aplicación', completada: false },
+  { id: id++, texto: 'Entregar mi tarea ', completada: false }
+])
+
+
+// --- MÉTODOS / FUNCIONES ---
+// Lógica para manipular nuestro estado.
+
+function agregarTarea() {
+  // Evita agregar tareas vacías
+  if (nuevaTareaTexto.value.trim() !== '') {
+    tareas.value.push({
+      id: id++,
+      texto: nuevaTareaTexto.value,
+      completada: false
+    })
+    // Limpia el campo de texto después de agregar la tarea
+    nuevaTareaTexto.value = ''
+  }
+}
+
+function eliminarTarea(tareaAEliminar) {
+  // Filtra la lista, manteniendo solo las tareas que NO tienen el id de la que queremos eliminar.
+  tareas.value = tareas.value.filter((tarea) => tarea !== tareaAEliminar)
+}
+
+
+// --- PROPIEDADES COMPUTADAS ---
+// Son valores que se derivan de nuestro estado. Se actualizan automáticamente si sus dependencias cambian.
+
+const tareasPendientes = computed(() => {
+  // Devuelve un nuevo array con solo las tareas que no están completadas.
+  return tareas.value.filter((tarea) => !tarea.completada)
+})
+</script>
+
+<template>
+  <div class="contenedor-app">
+    <header>
+      <h1>Mi Lista de Tareas</h1>
+      <form @submit.prevent="agregarTarea">
+        <input 
+          v-model="nuevaTareaTexto"
+          placeholder="¿Qué necesitas hacer hoy?"
+        >
+        <button>Añadir Tarea</button>
+      </form>
+    </header>
+    
+    <main>
+      <ul v-if="tareas.length > 0">
+        <li v-for="tarea in tareas" :key="tarea.id">
+          
+          <input type="checkbox" v-model="tarea.completada">
+          
+          <span :class="{ completada: tarea.completada }">
+            {{ tarea.texto }}
+          </span>
+          
+          <button class="eliminar" @click="eliminarTarea(tarea)">
+            &times;
+          </button>
+        </li>
+      </ul>
+      
+      <p v-else class="lista-vacia">
+        ¡Felicidades, no tienes nada pendiente!
+      </p>
+    </main>
+    
+    <footer>
+      <p>Tareas pendientes: {{ tareasPendientes.length }}</p>
+    </footer>
+  </div>
+</template>
+
+<style>
+/* Estilos generales para que la aplicación se vea bien */
+:root {
+  --color-vue: #42b883;
+  --color-fondo: #f2f2f2;
+  --color-texto: #2c3e50;
+  --color-borde: #ddd;
+  --color-peligro: #e74c3c;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.contenedor-app {
+  background: white;
+  width: 500px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+header h1 {
+  color: var(--color-vue);
+  text-align: center;
+  margin-top: 0;
+}
+
+form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  background-color: var(--color-vue);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #36a271;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+/* El span crece para ocupar el espacio disponible */
+li span {
+  margin-left: 12px;
+  flex-grow: 1;
+}
+
+/* Estilo para la tarea cuando está completada */
+.completada {
+  text-decoration: line-through;
+  color: #999;
+}
+
+button.eliminar {
+  background: none;
+  border: none;
+  color: var(--color-peligro);
+  font-size: 1.5rem;
+  font-weight: bold;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  margin-left: auto; /* Empuja el botón a la derecha */
+}
+
+button.eliminar:hover {
+  opacity: 1;
+}
+
+.lista-vacia {
+  text-align: center;
+  color: #777;
+  padding: 2rem 0;
+}
+
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+</style>
+    
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
