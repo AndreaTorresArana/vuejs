@@ -16,15 +16,21 @@
   }
 }
 "scripts": {
-  "name": "...",
-  "version": "...",
+  "name": "vite-vue-starter",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"  // <-- AÑADE ESTA LÍNEA
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    ...
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.1",
+    "vite": "^4.1.4",
+    "gh-pages": "^5.0.0" 
   }
 }
